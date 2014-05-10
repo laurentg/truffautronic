@@ -37,6 +37,8 @@ import org.truffautronic.model.Duration;
 import org.truffautronic.model.OutputMixer;
 import org.truffautronic.model.Scenario;
 import org.truffautronic.model.Scene;
+import org.truffautronic.model.TimeLabel;
+import org.truffautronic.model.TimeLabelsBundle;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
@@ -212,7 +214,7 @@ public class ScenarioIO {
 		xstream.aliasSystemAttribute(null, "class");
 		xstream.alias("scenario", Scenario.class);
 		xstream.alias("audioParams", AudioParams.class);
-		xstream.addImplicitCollection(Scenario.class, "scenes");
+		// xstream.addImplicitCollection(Scenario.class, "scenes");
 		// xstream.addImplicitCollection(Scenario.class, "audioOutputs");
 		xstream.alias("scene", Scene.class);
 		xstream.addImplicitCollection(Scene.class, "cues");
@@ -223,6 +225,9 @@ public class ScenarioIO {
 				"audioFactory");
 		xstream.aliasAttribute(AudioCue.class, "volumeManager", "volume");
 		xstream.alias("mixer", OutputMixer.class);
+		xstream.alias("labels", TimeLabelsBundle.class);
+		xstream.addImplicitCollection(TimeLabelsBundle.class, "timeLabels");
+		xstream.alias("label", TimeLabel.class);
 		xstream.registerConverter(new DurationConverter());
 		xstream.registerConverter(new ScenarioConverter());
 		xstream.registerConverter(new OutputMixerConverter());

@@ -75,8 +75,6 @@ public class ClipCueAudioFactory implements CueAudioFactory {
 		if (!audioFormat.getEncoding().equals(AudioFormat.Encoding.PCM_SIGNED)
 				|| audioFormat.getSampleSizeInBits() != 16
 				|| audioFormat.isBigEndian()) {
-			System.out.println(audioFile
-					+ ": Forcing PCM_SIGNED, 16 bits, little endian.");
 			// Force PCM_signed, little endian, 16 bits sample size
 			audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
 					audioFormat.getSampleRate(), 16, audioFormat.getChannels(),

@@ -273,6 +273,7 @@ public class CueView extends JPanel implements AudioCue.Listener {
 		Duration duration = cue.getTotalTime();
 		WaveformPanel waveformPanel = timePanel.getWaveformPanel();
 		waveformPanel.setWaveforms(cue.getWaveforms());
+		waveformPanel.setTimeLabels(cue.getTimeLabels());
 		waveformPanel.setTotalTimeMs(duration == null ? 0 : duration.getMs());
 		TimeCursorPanel timeCursor = timePanel.getCursorPanel();
 		timeCursor.setTotalTimeMs(duration == null ? 0 : duration.getMs());
@@ -297,6 +298,10 @@ public class CueView extends JPanel implements AudioCue.Listener {
 		cue.getVolumeManager().setFadeOutDuration(new Duration(fadeOutMs));
 	}
 
+	public AudioCue getAudioCue() {
+		return cue;
+	}
+	
 	private void displayMenu(Component invoker, int x, int y) {
 		final JPopupMenu popupMenu = new JPopupMenu();
 		// Rename cue

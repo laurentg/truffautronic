@@ -37,7 +37,7 @@ public class Main {
 
 		AppController appController = new AppController();
 		if (args.length >= 1) {
-			appController.open(new File(args[0]));
+			appController.openInitialFile(new File(args[0]));
 		}
 		appController.run();
 	}

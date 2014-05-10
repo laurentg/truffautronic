@@ -30,12 +30,12 @@ public class ViewUtils {
 
 	// Create fonts
 	public static Font BIG_FONT = new Font(Font.DIALOG, Font.BOLD, 14);
-	public static Font NORMAL_FONT = new Font(Font.DIALOG, Font.PLAIN, 10);
+	public static Font NORMAL_FONT = new Font(Font.DIALOG, Font.PLAIN, 11);
 	public static Font SMALL_FONT = new Font(Font.DIALOG, Font.PLAIN, 8);
 
 	public static ImageIcon loadIcon(String imageFile) {
-		InputStream istream = ViewUtils.class.getClassLoader().getResourceAsStream(
-				imageFile);
+		InputStream istream = ViewUtils.class.getClassLoader()
+				.getResourceAsStream(imageFile);
 		if (istream == null)
 			throw new RuntimeException("Missing image: " + imageFile);
 		try {
@@ -43,5 +43,12 @@ public class ViewUtils {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static String cutStr(String str, int len) {
+		if (str.length() > len) {
+			return str.substring(0, len) + "…";
+		}
+		return str;
 	}
 }

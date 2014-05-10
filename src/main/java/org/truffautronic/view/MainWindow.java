@@ -266,6 +266,22 @@ public class MainWindow {
 			}
 		});
 
+		// Help menu
+		JMenu helpMenu = new JMenu(I18N.translate("menu.help"));
+		menuBar.add(helpMenu);
+		helpMenu.setMnemonic(KeyEvent.VK_H);
+		JMenuItem aboutMenuItem = new JMenuItem(
+				I18N.translate("menu.help.about"),
+				ViewUtils.loadIcon("16x16/about.png"));
+		aboutMenuItem.setMnemonic(KeyEvent.VK_A);
+		helpMenu.add(aboutMenuItem);
+		aboutMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new SplashDialog(rootFrame).setVisible(true);
+			}
+		});
+
 		return menuBar;
 	}
 
@@ -273,6 +289,11 @@ public class MainWindow {
 		if (!askForSaving())
 			return;
 		listener.newProject();
+	}
+
+	public void openFile(File file) {
+		currentFile = file;
+		listener.open(currentFile);
 	}
 
 	private void openScenario() {

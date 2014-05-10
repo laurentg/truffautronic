@@ -31,12 +31,15 @@ import javax.swing.border.BevelBorder;
 
 import org.truffautronic.audio.AudioWaveform;
 import org.truffautronic.model.Duration;
+import org.truffautronic.model.TimeLabel;
+import org.truffautronic.model.TimeLabelsBundle;
 
 public class WaveformPanel extends JComponent {
 	private static final long serialVersionUID = 1L;
 
 	private long totalTimeMs;
 	private List<AudioWaveform> waveforms;
+	private TimeLabelsBundle timeLabels;
 
 	public WaveformPanel() {
 		super();
@@ -45,6 +48,11 @@ public class WaveformPanel extends JComponent {
 
 	public void setWaveforms(List<AudioWaveform> waveforms) {
 		this.waveforms = waveforms;
+		repaint();
+	}
+
+	public void setTimeLabels(TimeLabelsBundle timeLabels) {
+		this.timeLabels = timeLabels;
 		repaint();
 	}
 
@@ -66,7 +74,7 @@ public class WaveformPanel extends JComponent {
 		}
 		int width = getWidth();
 		int height = getHeight();
-		// Labels
+		// Ticks
 		if (totalTimeMs > 0) {
 			long tickMs1 = Duration.round(totalTimeMs * 50 / width).getMs();
 			long tickMs2 = Duration.round(totalTimeMs * 10 / width).getMs();
@@ -87,6 +95,7 @@ public class WaveformPanel extends JComponent {
 				ms += tickMs1;
 			}
 		}
+		// Waveform
 		int nChannels = waveforms.size();
 		for (int channel = 0; channel < nChannels; channel++) {
 			AudioWaveform waveform = waveforms.get(channel);
@@ -108,6 +117,28 @@ public class WaveformPanel extends JComponent {
 			}
 			g.setColor(Color.BLUE);
 			g.drawLine(0, yBase + height2, width, yBase + height2);
+		}
+		// Labels
+		int lastXEnd = Integer.MIN_VALUE;
+		g.setFont(ViewUtils.NORMAL_FONT);
+		int sh = g.getFontMetrics().getHeight();
+		int y = sh + 10;
+		for (TimeLabel timeLabel : timeLabels.getLabels()) {
+			int x = (int) (timeLabel.getPosition().getMs() * width / totalTimeMs);
+			int sw = g.getFontMetrics().stringWidth(timeLabel.getName());
+			if (x > lastXEnd + 2) {
+				y = sh + 10;
+			} else {
+				y = y + sh;
+				if (y > height)
+					y = sh + 10;
+			}
+			g.setColor(new Color(0.5f, 0.5f, 1.0f, 0.5f));
+			g.fillRect(x, y - sh + 4, sw + 4, sh - 2);
+			g.setColor(Color.BLACK);
+			g.drawLine(x, height, x, y - sh + 4);
+			g.drawString(timeLabel.getName(), x + 2, y);
+			lastXEnd = x + sw;
 		}
 	}
 }

@@ -45,6 +45,7 @@ public class AudioCue implements Cue, CueAudio.Listener, VolumeManager.Listener 
 	private boolean loop = false;
 	private VolumeManager volumeManager;
 	private CueAudioFactory cueAudioFactory;
+	private TimeLabelsBundle timeLabels;
 
 	// Transient parameters
 	private transient List<CueAudio> playingList = new ArrayList<CueAudio>();
@@ -276,5 +277,11 @@ public class AudioCue implements Cue, CueAudio.Listener, VolumeManager.Listener 
 	@Override
 	public String toString() {
 		return getName();
+	}
+
+	public TimeLabelsBundle getTimeLabels() {
+		if (timeLabels == null)
+			timeLabels = new TimeLabelsBundle();
+		return timeLabels;
 	}
 }

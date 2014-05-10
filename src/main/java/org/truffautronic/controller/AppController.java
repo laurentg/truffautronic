@@ -45,6 +45,10 @@ public class AppController implements MainWindow.Listener {
 		mainWindow.setScenario(scenario);
 	}
 
+	public void openInitialFile(File file) {
+		mainWindow.openFile(file);
+	}
+	
 	@Override
 	public void open(File file) {
 		ScenarioIO io = new ScenarioIO();

@@ -32,12 +32,14 @@ import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.border.BevelBorder;
 
 import org.truffautronic.controller.I18N;
 import org.truffautronic.model.Duration;
+import org.truffautronic.model.TimeLabel;
 
 public class TimeCursorPanel extends JComponent {
 	private static final long serialVersionUID = 1L;
@@ -54,6 +56,7 @@ public class TimeCursorPanel extends JComponent {
 		private JMenuItem startHereItem, endHereItem;
 		private JMenuItem endFadeInItem, startFadeOutItem;
 		private JMenuItem resetFadeInItem, resetFadeOutItem;
+		private JMenuItem addLabelItem, removeLabelItem;
 
 		public Popup() {
 			JMenuItem cursorPosition = new JMenuItem(
@@ -134,6 +137,36 @@ public class TimeCursorPanel extends JComponent {
 				}
 			});
 			add(resetFadeOutItem);
+			add(new JSeparator());
+			addLabelItem = new JMenuItem(I18N.translate("menu.cue.add_label"));
+			addLabelItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (addLabel(cursorMs))
+						cueView.repaint();
+				}
+			});
+			add(addLabelItem);
+			final TimeLabel nearest = cueView.getAudioCue().getTimeLabels()
+					.getNearestLabel(new Duration(cursorMs));
+			if (nearest != null) {
+				int pixels = msToPixel(Math.abs(nearest.getPosition().getMs()
+						- cursorMs));
+				if (pixels < 20) {
+					removeLabelItem = new JMenuItem(I18N.translate(
+							"menu.cue.remove_label",
+							ViewUtils.cutStr(nearest.getName(), 10)));
+					removeLabelItem.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							cueView.getAudioCue().getTimeLabels()
+									.deleteTimeLabel(nearest);
+							cueView.repaint();
+						}
+					});
+					add(removeLabelItem);
+				}
+			}
 		}
 	}
 
@@ -190,6 +223,13 @@ public class TimeCursorPanel extends JComponent {
 		repaint();
 	}
 
+	private int msToPixel(long ms) {
+		if (totalLenMs == 0) {
+			return 0;
+		}
+		return (int) (ms * getWidth() / totalLenMs);
+	}
+
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		int width = getWidth();
@@ -229,5 +269,15 @@ public class TimeCursorPanel extends JComponent {
 			int xc = (int) (cursorMs * width / totalLenMs);
 			g.drawLine(xc, 0, xc, height);
 		}
+	}
+
+	private boolean addLabel(long positionMs) {
+		String name = JOptionPane.showInputDialog(TimeCursorPanel.this,
+				I18N.translate("dialog.cue.new_label_name"), "");
+		if (name == null || name.isEmpty())
+			return false;
+		cueView.getAudioCue().getTimeLabels()
+				.addLabel(new TimeLabel(new Duration(positionMs), name));
+		return true;
 	}
 }
