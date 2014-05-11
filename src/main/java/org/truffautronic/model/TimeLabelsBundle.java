@@ -6,17 +6,21 @@ import java.util.List;
 
 public class TimeLabelsBundle {
 
-	private List<TimeLabel> timeLabels = new ArrayList<TimeLabel>();
+	private List<TimeLabel> timeLabels;
 
 	public TimeLabelsBundle() {
 	}
 
 	public void addLabel(TimeLabel timeLabel) {
+		if (timeLabels == null)
+			timeLabels = new ArrayList<TimeLabel>();
 		timeLabels.add(timeLabel);
 		Collections.sort(timeLabels);
 	}
 
 	public List<TimeLabel> getLabels() {
+		if (timeLabels == null)
+			timeLabels = new ArrayList<TimeLabel>();
 		return Collections.unmodifiableList(timeLabels);
 	}
 
