@@ -17,7 +17,7 @@ apply plugin: 'release'
 
 release {
     failOnSnapshotDependencies = true
-    allowLocalModifications = false
+    allowLocalModifications = true
     releaseDryRun = false
     scm = 'git'
 }
