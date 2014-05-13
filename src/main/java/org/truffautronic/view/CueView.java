@@ -301,7 +301,7 @@ public class CueView extends JPanel implements AudioCue.Listener {
 	public AudioCue getAudioCue() {
 		return cue;
 	}
-	
+
 	private void displayMenu(Component invoker, int x, int y) {
 		final JPopupMenu popupMenu = new JPopupMenu();
 		// Rename cue
@@ -404,7 +404,7 @@ public class CueView extends JPanel implements AudioCue.Listener {
 			public void actionPerformed(ActionEvent e) {
 				if (JOptionPane.showConfirmDialog(CueView.this,
 						I18N.translate("dialog.confirm_cue_deletion"),
-						I18N.translate("dialog.confirm"),
+						I18N.translate("dialog.title.confirm"),
 						JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
 					cue.stop();

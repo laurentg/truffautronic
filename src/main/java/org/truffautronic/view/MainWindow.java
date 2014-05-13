@@ -26,6 +26,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -69,6 +70,7 @@ public class MainWindow {
 	private Listener listener;
 	private JFrame rootFrame;
 	private CueListView cueListView;
+	private File cwd = null;
 
 	public MainWindow(Listener listener) {
 		this.listener = listener;
@@ -288,11 +290,13 @@ public class MainWindow {
 	private void newScenario() {
 		if (!askForSaving())
 			return;
+		setCurrentFile(null);
 		listener.newProject();
 	}
 
 	public void openFile(File file) {
-		currentFile = file;
+		setCurrentFile(file);
+		cwd = getParentPath(currentFile);
 		listener.open(currentFile);
 	}
 
@@ -300,27 +304,30 @@ public class MainWindow {
 		if (!askForSaving())
 			return;
 		JFileChooser fileChooser = new JFileChooser();
-		File cwd = currentFile == null ? Paths.get("").toAbsolutePath()
-				.toFile() : currentFile.getParentFile();
+		if (cwd == null)
+			cwd = getParentPath(currentFile);
 		fileChooser.setCurrentDirectory(cwd);
 		int retval = fileChooser.showOpenDialog(rootFrame);
 		if (retval != JFileChooser.APPROVE_OPTION) {
 			return;
 		}
-		currentFile = fileChooser.getSelectedFile();
+		setCurrentFile(fileChooser.getSelectedFile());
+		cwd = getParentPath(currentFile);
 		listener.open(currentFile);
 	}
 
 	private boolean saveScenario(boolean askFilename) {
 		if (currentFile == null || askFilename) {
 			JFileChooser fileChooser = new JFileChooser();
-			File cwd = Paths.get("").toAbsolutePath().toFile();
+			if (cwd == null)
+				cwd = getParentPath(new File("."));
 			fileChooser.setCurrentDirectory(cwd);
 			int retval = fileChooser.showSaveDialog(rootFrame);
 			if (retval != JFileChooser.APPROVE_OPTION) {
 				return false;
 			}
-			currentFile = fileChooser.getSelectedFile();
+			setCurrentFile(fileChooser.getSelectedFile());
+			cwd = getParentPath(currentFile);
 		}
 		listener.save(currentFile);
 		this.lastSavedChecksum = new ScenarioIO().checksum(scenario);
@@ -387,7 +394,8 @@ public class MainWindow {
 			return;
 		}
 		JFileChooser fileChooser = new JFileChooser();
-		File cwd = Paths.get("").toAbsolutePath().toFile();
+		if (cwd == null)
+			cwd = Paths.get("").toAbsolutePath().toFile();
 		fileChooser.setCurrentDirectory(cwd);
 		int retval = fileChooser.showOpenDialog(rootFrame);
 		if (retval != JFileChooser.APPROVE_OPTION) {
@@ -467,6 +475,27 @@ public class MainWindow {
 				.showMessageDialog(rootFrame, message,
 						I18N.translate("dialog.title.error"),
 						JOptionPane.ERROR_MESSAGE);
+	}
+
+	private File getParentPath(File file) {
+		try {
+			return file.getCanonicalFile().getParentFile();
+		} catch (IOException e) {
+			return file.getAbsoluteFile().getParentFile();
+		}
+	}
+
+	private void setCurrentFile(File file) {
+		this.currentFile = file;
+		if (this.currentFile == null)
+			rootFrame.setTitle("Truffautronic");
+		else
+			try {
+				rootFrame.setTitle("Truffautronic - "
+						+ file.getCanonicalPath().toString());
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 	}
 
 }

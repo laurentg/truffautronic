@@ -92,7 +92,7 @@ public class ScenarioIO {
 			File file = new File(str);
 			if (!file.isAbsolute() && basePath != null) {
 				// Convert to absolute file name, relative to baseDir
-				file = new File(basePath.toFile().getAbsoluteFile()
+				file = new File(getAbsolutePath(basePath.toFile())
 						+ File.separator + file.getPath());
 			}
 			return file;
@@ -182,7 +182,7 @@ public class ScenarioIO {
 	}
 
 	public void save(Scenario scenario, File file) throws IOException {
-		XStream xstream = createXStream(file.getAbsoluteFile().getParentFile());
+		XStream xstream = createXStream(getAbsolutePath(file).getParentFile());
 		FileOutputStream fos = new FileOutputStream(file);
 		xstream.toXML(scenario, fos);
 		fos.close();
@@ -202,11 +202,19 @@ public class ScenarioIO {
 	}
 
 	public Scenario load(File file) throws IOException {
-		XStream xstream = createXStream(file.getAbsoluteFile().getParentFile());
+		XStream xstream = createXStream(getAbsolutePath(file).getParentFile());
 		FileInputStream fis = new FileInputStream(file);
 		Scenario scenario = (Scenario) xstream.fromXML(fis);
 		fis.close();
 		return scenario;
+	}
+	
+	private static File getAbsolutePath(File file) {
+		try {
+			return file.getCanonicalFile();
+		} catch (IOException e) {
+			return file.getAbsoluteFile();
+		}
 	}
 
 	private XStream createXStream(File baseDir) {
@@ -214,8 +222,6 @@ public class ScenarioIO {
 		xstream.aliasSystemAttribute(null, "class");
 		xstream.alias("scenario", Scenario.class);
 		xstream.alias("audioParams", AudioParams.class);
-		// xstream.addImplicitCollection(Scenario.class, "scenes");
-		// xstream.addImplicitCollection(Scenario.class, "audioOutputs");
 		xstream.alias("scene", Scene.class);
 		xstream.addImplicitCollection(Scene.class, "cues");
 		xstream.alias("audioCue", AudioCue.class);
@@ -228,6 +234,7 @@ public class ScenarioIO {
 		xstream.alias("labels", TimeLabelsBundle.class);
 		xstream.addImplicitCollection(TimeLabelsBundle.class, "timeLabels");
 		xstream.alias("label", TimeLabel.class);
+		xstream.alias("file", File.class, File.class);
 		xstream.registerConverter(new DurationConverter());
 		xstream.registerConverter(new ScenarioConverter());
 		xstream.registerConverter(new OutputMixerConverter());
