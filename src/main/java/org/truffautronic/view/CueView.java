@@ -70,6 +70,7 @@ public class CueView extends JPanel implements AudioCue.Listener {
 	private JPanel headerPanel;
 	private JLabel nameLabel;
 	private JLabel descLabel;
+	private JLabel audioDescLabel;
 	private CueListView cueListView;
 
 	public CueView(Scenario scenario, AudioCue aCue, CueListView cueListView) {
@@ -106,6 +107,10 @@ public class CueView extends JPanel implements AudioCue.Listener {
 		descLabel = new JLabel(cue.getDescription());
 		headerPanel.add(descLabel);
 		descLabel.setFont(ViewUtils.NORMAL_FONT);
+		audioDescLabel = new JLabel(cue.getAudioDescription());
+		headerPanel.add(Box.createHorizontalGlue());
+		headerPanel.add(audioDescLabel);
+		audioDescLabel.setFont(ViewUtils.NORMAL_FONT);
 
 		// Mouse listener for popup
 		headerPanel.addMouseListener(new MouseAdapter() {
@@ -351,6 +356,7 @@ public class CueView extends JPanel implements AudioCue.Listener {
 				if (retval == JFileChooser.APPROVE_OPTION) {
 					cue.stop();
 					cue.setAudioFile(fileChooser.getSelectedFile());
+					audioDescLabel.setText(cue.getAudioDescription());
 					initTimePanel();
 				}
 			}

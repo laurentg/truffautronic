@@ -175,7 +175,7 @@ public class AudioCue implements Cue, CueAudio.Listener, VolumeManager.Listener 
 			start = Duration.ZERO;
 		return start;
 	}
-
+	
 	public Duration getEnd() {
 		if (end == null)
 			end = cueAudioFactory.getDuration();
@@ -279,6 +279,10 @@ public class AudioCue implements Cue, CueAudio.Listener, VolumeManager.Listener 
 		return getName();
 	}
 
+	public String getAudioDescription() {
+		return cueAudioFactory.getAudioDescription();
+	}
+	
 	public TimeLabelsBundle getTimeLabels() {
 		if (timeLabels == null)
 			timeLabels = new TimeLabelsBundle();

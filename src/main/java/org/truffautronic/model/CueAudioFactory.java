@@ -31,5 +31,7 @@ public interface CueAudioFactory {
 	public Duration getDuration();
 
 	public List<AudioWaveform> getWaveforms();
+	
+	public String getAudioDescription();
 
 }

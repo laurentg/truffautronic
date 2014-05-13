@@ -129,6 +129,20 @@ public class ClipCueAudioFactory implements CueAudioFactory {
 		return waveforms;
 	}
 
+	@Override
+	public String getAudioDescription() {
+		StringBuilder sb = new StringBuilder("[");
+		if (audioFile != null)
+			sb.append(audioFile.getName() + ", ");
+		if (audioFormat != null)
+			sb.append(audioFormat.getChannels() + "ch. "
+					+ audioFormat.getSampleRate() + "Hz "
+					+ audioFormat.getSampleSizeInBits() + "bits "
+					+ audioFormat.getEncoding().toString());
+		sb.append("]");
+		return sb.toString();
+	}
+
 	private Object readResolve() throws IOException {
 		if (audioFile != null) {
 			setAudioFile(audioFile);
