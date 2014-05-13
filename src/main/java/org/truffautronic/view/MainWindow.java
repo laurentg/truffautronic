@@ -41,6 +41,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import org.truffautronic.controller.I18N;
 import org.truffautronic.controller.ScenarioIO;
@@ -90,7 +91,16 @@ public class MainWindow {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				new SplashDialog(rootFrame).setVisible(true);
+				final SplashDialog splash = new SplashDialog(rootFrame);
+				final Timer closeTimer = new Timer(5000, new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						splash.setVisible(false);
+					}
+				});
+				closeTimer.setRepeats(false);
+				closeTimer.start();
+				splash.setVisible(true);
 			}
 		});
 	}
