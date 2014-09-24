@@ -19,6 +19,7 @@
 
 package org.truffautronic;
 
+import java.awt.Color;
 import java.io.File;
 import java.util.Locale;
 
@@ -34,6 +35,7 @@ public class Main {
 		I18N.setLocale(Locale.getDefault());
 
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		UIManager.put("TabbedPane.selected", Color.red);
 
 		AppController appController = new AppController();
 		if (args.length >= 1) {
