@@ -68,9 +68,7 @@ public class CueView extends JPanel implements AudioCue.Listener {
 	private AudioCue cue;
 	private AudioTimeLinePanel timePanel;
 	private JPanel headerPanel;
-	private JLabel nameLabel;
-	private JLabel descLabel;
-	private JLabel audioDescLabel;
+	private JLabel label;
 	private CueListView cueListView;
 
 	public CueView(Scenario scenario, AudioCue aCue, CueListView cueListView) {
@@ -88,9 +86,8 @@ public class CueView extends JPanel implements AudioCue.Listener {
 		setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
 		// Header
-		FlowLayout headerLayout = new FlowLayout();
+		BorderLayout headerLayout = new BorderLayout();
 		headerLayout.setVgap(0);
-		headerLayout.setAlignment(FlowLayout.LEADING);
 		headerPanel = new JPanel(headerLayout);
 		add(headerPanel, BorderLayout.NORTH);
 		if (cue.getColor() != null) {
@@ -101,16 +98,10 @@ public class CueView extends JPanel implements AudioCue.Listener {
 				cue.setColor(null);
 			}
 		}
-		nameLabel = new JLabel(cue.getName());
-		headerPanel.add(nameLabel);
-		nameLabel.setFont(ViewUtils.BIG_FONT);
-		descLabel = new JLabel(cue.getDescription());
-		headerPanel.add(descLabel);
-		descLabel.setFont(ViewUtils.NORMAL_FONT);
-		audioDescLabel = new JLabel(cue.getAudioDescription());
-		headerPanel.add(Box.createHorizontalGlue());
-		headerPanel.add(audioDescLabel);
-		audioDescLabel.setFont(ViewUtils.NORMAL_FONT);
+		label = new JLabel();
+		updateLabel();
+		headerPanel.add(label, BorderLayout.CENTER);
+		label.setFont(ViewUtils.NORMAL_FONT);
 
 		// Mouse listener for popup
 		headerPanel.addMouseListener(new MouseAdapter() {
@@ -330,7 +321,7 @@ public class CueView extends JPanel implements AudioCue.Listener {
 						I18N.translate("dialog.cue.newname"), cue.getName());
 				if (newName != null) {
 					cue.setName(newName);
-					nameLabel.setText(newName);
+					updateLabel();
 				}
 			}
 		});
@@ -347,7 +338,7 @@ public class CueView extends JPanel implements AudioCue.Listener {
 						cue.getDescription());
 				if (newDesc != null) {
 					cue.setDescription(newDesc);
-					descLabel.setText(newDesc);
+					updateLabel();
 				}
 			}
 		});
@@ -366,7 +357,7 @@ public class CueView extends JPanel implements AudioCue.Listener {
 				if (retval == JFileChooser.APPROVE_OPTION) {
 					cue.stop();
 					cue.setAudioFile(fileChooser.getSelectedFile());
-					audioDescLabel.setText(cue.getAudioDescription());
+					updateLabel();
 					initTimePanel();
 				}
 			}
@@ -434,5 +425,14 @@ public class CueView extends JPanel implements AudioCue.Listener {
 		popupMenu.add(deleteMenuItem);
 
 		popupMenu.show(invoker, x, y);
+	}
+
+	private void updateLabel() {
+		label.setText(String
+				.format("<html><span style='font-size: 120%%; font-weight: bold'>%s</span> <i>(%s)</i> %s</html>",
+						cue.getName(),
+						cue.getAudioDescription(),
+						cue.getDescription() == null ? "" : cue
+								.getDescription()));
 	}
 }
