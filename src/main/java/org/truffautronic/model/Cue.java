@@ -26,6 +26,8 @@ public interface Cue {
 	public String getDescription();
 
 	public String getColor();
-	
+
+	public int getPlayingCount();
+
 	public void destroy();
 }

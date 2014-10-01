@@ -22,6 +22,7 @@ package org.truffautronic.view;
 import java.awt.Component;
 
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -36,6 +37,8 @@ public class CueListView extends JTabbedPane {
 	private static final long serialVersionUID = 1L;
 
 	private Scenario scenario;
+
+	private ImageIcon playIcon = ViewUtils.loadIcon("16x16/audio.png");
 
 	public CueListView(Scenario scenario) {
 		this.scenario = scenario;
@@ -84,8 +87,23 @@ public class CueListView extends JTabbedPane {
 		return scenario.getScenes().indexOf(scene);
 	}
 
+	public void updatePlaying(Scene scene) {
+		updateTabName(scene);
+	}
+
 	public void rename(Scene scene) {
-		setTitleAt(getSceneTabIndex(scene), scene.getName());
+		updateTabName(scene);
+	}
+
+	private void updateTabName(Scene scene) {
+		int nPlaying = 0;
+		for (Cue cue : scene.getCues()) {
+			nPlaying += cue.getPlayingCount();
+		}
+		int tabIndex = getSceneTabIndex(scene);
+		setIconAt(tabIndex, nPlaying > 0 ? playIcon : null);
+		setTitleAt(tabIndex, (nPlaying > 0 ? ":" + nPlaying + " - " : "")
+				+ scene.getName());
 	}
 
 	public void refresh(Scene scene) {

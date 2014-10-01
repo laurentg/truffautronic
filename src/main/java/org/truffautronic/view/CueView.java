@@ -289,6 +289,16 @@ public class CueView extends JPanel implements AudioCue.Listener {
 	}
 
 	@Override
+	public void audioStarted() {
+		cueListView.updatePlaying(scenario.getCueScene(cue));
+	}
+
+	@Override
+	public void audioFinished() {
+		cueListView.updatePlaying(scenario.getCueScene(cue));
+	}
+
+	@Override
 	public void updatePlayPositionsMs(long[] positionsMs) {
 		timePanel.getCursorPanel().setCursorsMs(positionsMs);
 	}
@@ -386,16 +396,19 @@ public class CueView extends JPanel implements AudioCue.Listener {
 		JMenu moveMenuItem = new JMenu(I18N.translate("menu.cue.move"));
 		moveMenuItem.setIcon(ViewUtils.loadIcon("16x16/move.png"));
 		boolean moveOk = false;
-		for (final Scene scene : scenario.getScenes()) {
-			if (scene.getCues().contains(cue))
+		final Scene oldScene = scenario.getCueScene(cue);
+		for (final Scene newScene : scenario.getScenes()) {
+			if (newScene.equals(oldScene))
 				continue;
 			moveOk = true;
-			JMenuItem moveScene = new JMenuItem(scene.getName());
+			JMenuItem moveScene = new JMenuItem(newScene.getName());
 			moveMenuItem.add(moveScene);
 			moveScene.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					cueListView.moveCue(cue, scene);
+					cueListView.moveCue(cue, newScene);
+					cueListView.updatePlaying(oldScene);
+					cueListView.updatePlaying(newScene);
 				}
 			});
 		}

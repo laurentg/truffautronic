@@ -34,6 +34,10 @@ public class AudioCue implements Cue, CueAudio.Listener, VolumeManager.Listener 
 
 	public interface Listener {
 		public void updatePlayPositionsMs(long[] positionsMs);
+
+		public void audioStarted();
+
+		public void audioFinished();
 	}
 
 	// Saved parameters
@@ -86,6 +90,11 @@ public class AudioCue implements Cue, CueAudio.Listener, VolumeManager.Listener 
 	}
 
 	@Override
+	public int getPlayingCount() {
+		return playingList.size();
+	}
+
+	@Override
 	public void destroy() {
 		stop();
 		volumeManager.destroy();
@@ -131,6 +140,8 @@ public class AudioCue implements Cue, CueAudio.Listener, VolumeManager.Listener 
 				updatePlaying();
 			}
 			playingList.add(cueAudio);
+			if (listener != null)
+				listener.audioStarted();
 			System.out.println("Starting a new cue: " + name);
 		}
 	}
@@ -175,7 +186,7 @@ public class AudioCue implements Cue, CueAudio.Listener, VolumeManager.Listener 
 			start = Duration.ZERO;
 		return start;
 	}
-	
+
 	public Duration getEnd() {
 		if (end == null)
 			end = cueAudioFactory.getDuration();
@@ -251,6 +262,8 @@ public class AudioCue implements Cue, CueAudio.Listener, VolumeManager.Listener 
 			System.out.println("Cue finished: " + name);
 			cueAudio.destroy();
 			playingList.remove(cueAudio);
+			if (listener != null)
+				listener.audioFinished();
 		}
 	}
 
@@ -282,7 +295,7 @@ public class AudioCue implements Cue, CueAudio.Listener, VolumeManager.Listener 
 	public String getAudioDescription() {
 		return cueAudioFactory.getAudioDescription();
 	}
-	
+
 	public TimeLabelsBundle getTimeLabels() {
 		if (timeLabels == null)
 			timeLabels = new TimeLabelsBundle();
