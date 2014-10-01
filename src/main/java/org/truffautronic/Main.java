@@ -35,7 +35,9 @@ public class Main {
 		I18N.setLocale(Locale.getDefault());
 
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		UIManager.put("TabbedPane.selected", Color.red);
+
+		UIManager.put("TabbedPane.selected", Color.YELLOW);
+		UIManager.put("ToggleButton.select", Color.YELLOW);
 
 		AppController appController = new AppController();
 		if (args.length >= 1) {
