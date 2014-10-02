@@ -34,6 +34,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -175,12 +176,20 @@ public class MixerControlView extends JPanel implements Runnable {
 				int currValue = mixSlider.getValue();
 				int timeout = 10000;
 				if (automixTarget >= 0 && currValue != automixTarget) {
-					int newValue = currValue < automixTarget ? currValue + 1
+					final int newValue = currValue < automixTarget ? currValue + 1
 							: currValue - 1;
-					mixSlider.setValue(newValue);
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							mixSlider.setValue(newValue);
+						}
+					});
 					if (newValue == automixTarget) {
 						automixTarget = -1;
-						updateAutomixIcon();
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								updateAutomixIcon();
+							}
+						});
 					}
 					timeout = AUTOMIX_DELAY_MS[automixSpeedSlider.getValue()];
 				}
