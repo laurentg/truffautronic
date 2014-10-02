@@ -429,7 +429,7 @@ public class CueView extends JPanel implements AudioCue.Listener {
 
 	private void updateLabel() {
 		label.setText(String
-				.format("<html><span style='font-size: 120%%; font-weight: bold'>%s</span> <i>(%s)</i> %s</html>",
+				.format("<html><span style='font-size: 120%%; font-weight: bold'>%s</span> <i>%s</i> %s</html>",
 						cue.getName(),
 						cue.getAudioDescription(),
 						cue.getDescription() == null ? "" : cue
