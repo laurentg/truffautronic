@@ -20,12 +20,17 @@
 package org.truffautronic.view;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -36,10 +41,18 @@ import javax.swing.event.ChangeListener;
 import org.truffautronic.model.MixerControl;
 import org.truffautronic.model.Scenario;
 
-public class MixerControlView extends JPanel {
+public class MixerControlView extends JPanel implements Runnable {
 	private static final long serialVersionUID = 1L;
 
 	private MixerControl mixerControl;
+
+	private static final int[] AUTOMIX_DELAY_MS = { 100, 75, 50, 30, 20, 15, 10 };
+
+	private Thread automixThread;
+	private int automixTarget = -1;
+	private JButton automixButton;
+	private JSlider mixSlider;
+	private JSlider automixSpeedSlider;
 
 	public MixerControlView(Scenario scenario, MixerControl mixerControl) {
 		super();
@@ -59,13 +72,34 @@ public class MixerControlView extends JPanel {
 		headerPanel.add(nameLabel);
 		nameLabel.setFont(ViewUtils.BIG_FONT);
 
+		// Automix
+		automixButton = new JButton();
+		Insets buttonInsets = new Insets(0, 0, 0, 0);
+		automixButton.setMargin(buttonInsets);
+		headerPanel.add(automixButton);
+		automixButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				MixerControlView.this.startStopAutomix();
+			}
+		});
+		updateAutomixIcon();
+
+		automixSpeedSlider = new JSlider(JSlider.VERTICAL, 0,
+				AUTOMIX_DELAY_MS.length - 1, (AUTOMIX_DELAY_MS.length - 1) / 2);
+		headerPanel.add(automixSpeedSlider);
+		automixSpeedSlider.setMajorTickSpacing(1);
+		automixSpeedSlider.setPaintTicks(true);
+		automixSpeedSlider.setSnapToTicks(true);
+		automixSpeedSlider.setPreferredSize(new Dimension(30, 50));
+
 		// Sliders
 		JPanel sliderPanel = new JPanel();
 		add(sliderPanel, BorderLayout.CENTER);
 		sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.X_AXIS));
 
 		// Mix slider
-		JSlider mixSlider = new JSlider(JSlider.VERTICAL, 0, 100,
+		mixSlider = new JSlider(JSlider.VERTICAL, 0, 100,
 				Math.round(mixerControl.getMixer() * 100.0f));
 		sliderPanel.add(mixSlider);
 		mixSlider.setMajorTickSpacing(50);
@@ -105,5 +139,56 @@ public class MixerControlView extends JPanel {
 				MixerControlView.this.mixerControl.setVolume(source.getValue() / 100.0f);
 			}
 		});
+
+		// Automix thread
+		automixThread = new Thread(this);
+		automixThread.setDaemon(true);
+		automixThread.start();
+	}
+
+	private void startStopAutomix() {
+		synchronized (automixThread) {
+			if (automixTarget == -1) {
+				// Start
+				automixTarget = mixSlider.getValue() < 50 ? 100 : 0;
+			} else {
+				// Stop
+				automixTarget = -1;
+			}
+			updateAutomixIcon();
+			automixThread.notify();
+		}
+	}
+
+	private void updateAutomixIcon() {
+		if (automixTarget == -1) {
+			automixButton.setIcon(ViewUtils.loadIcon("16x16/automix.png"));
+		} else {
+			automixButton.setIcon(ViewUtils.loadIcon("16x16/stop.png"));
+		}
+	}
+
+	@Override
+	public void run() {
+		while (automixThread != null) {
+			synchronized (automixThread) {
+				int currValue = mixSlider.getValue();
+				int timeout = 10000;
+				if (automixTarget >= 0 && currValue != automixTarget) {
+					int newValue = currValue < automixTarget ? currValue + 1
+							: currValue - 1;
+					mixSlider.setValue(newValue);
+					if (newValue == automixTarget) {
+						automixTarget = -1;
+						updateAutomixIcon();
+					}
+					timeout = AUTOMIX_DELAY_MS[automixSpeedSlider.getValue()];
+				}
+				try {
+					automixThread.wait(timeout);
+				} catch (InterruptedException e) {
+				}
+			}
+		}
 	}
 }
