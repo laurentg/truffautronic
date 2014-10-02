@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.io.File;
 import java.util.Locale;
 
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.truffautronic.controller.AppController;
@@ -30,19 +31,28 @@ import org.truffautronic.controller.I18N;
 
 public class Main {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 
-		I18N.setLocale(Locale.getDefault());
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				I18N.setLocale(Locale.getDefault());
 
-		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				try {
+					UIManager.setLookAndFeel(UIManager
+							.getSystemLookAndFeelClassName());
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
 
-		UIManager.put("TabbedPane.selected", Color.YELLOW);
-		UIManager.put("ToggleButton.select", Color.YELLOW);
+				UIManager.put("TabbedPane.selected", Color.YELLOW);
+				UIManager.put("ToggleButton.select", Color.YELLOW);
 
-		AppController appController = new AppController();
-		if (args.length >= 1) {
-			appController.openInitialFile(new File(args[0]));
-		}
-		appController.run();
+				AppController appController = new AppController();
+				if (args.length >= 1) {
+					appController.openInitialFile(new File(args[0]));
+				}
+				appController.run();
+			}
+		});
 	}
 }
