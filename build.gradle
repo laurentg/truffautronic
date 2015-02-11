@@ -25,3 +25,5 @@ jar {
         attributes 'Implementation-Version': version
     }
 }
+
+applicationDefaultJvmArgs = [ "-Xmx1G" ]
