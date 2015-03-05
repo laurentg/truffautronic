@@ -314,7 +314,7 @@ public class MainWindow {
 		if (!askForSaving())
 			return;
 		JFileChooser fileChooser = new JFileChooser();
-		if (cwd == null)
+		if (cwd == null && currentFile != null)
 			cwd = getParentPath(currentFile);
 		fileChooser.setCurrentDirectory(cwd);
 		int retval = fileChooser.showOpenDialog(rootFrame);
