@@ -206,7 +206,14 @@ public class CueView extends JPanel implements AudioCue.Listener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				pauseResumeButton.setSelected(false);
-				cue.start(CueView.this.scenario.getAudioParams());
+				boolean started = cue.start(CueView.this.scenario
+						.getAudioParams());
+				if (!started) {
+					JOptionPane.showMessageDialog(null,
+							I18N.translate("dialog.cant.start.no.audio"),
+							I18N.translate("dialog.title.error"),
+							JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		// Stop button

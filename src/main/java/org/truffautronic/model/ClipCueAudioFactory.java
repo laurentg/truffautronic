@@ -62,6 +62,7 @@ public class ClipCueAudioFactory implements CueAudioFactory {
 		try {
 			loadAudio();
 		} catch (Exception e) {
+			System.err.println("File not found: " + audioFile);
 			this.audioFile = null;
 		}
 	}
@@ -115,6 +116,8 @@ public class ClipCueAudioFactory implements CueAudioFactory {
 	@Override
 	public CueAudio createCueAudio(AudioOutput audioOutput,
 			AudioParams audioParams, VolumeManager volumeManager) {
+		if (audioData == null)
+			return null;
 		return new ClipCueAudio(audioFormat, audioData, audioOutput,
 				audioParams, volumeManager);
 	}

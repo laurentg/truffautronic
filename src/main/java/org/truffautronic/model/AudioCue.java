@@ -122,14 +122,14 @@ public class AudioCue implements Cue, CueAudio.Listener, VolumeManager.Listener 
 		volumeManager.setOutputMixer(outputMixer);
 	}
 
-	public void start(AudioParams audioParams) {
+	public boolean start(AudioParams audioParams) {
 		if (paused) {
 			pauseResume();
 		}
 		CueAudio cueAudio = cueAudioFactory.createCueAudio(volumeManager
 				.getOutputMixer().getAudioOutput(), audioParams, volumeManager);
 		if (cueAudio == null)
-			return;
+			return false;
 		cueAudio.setListener(this);
 		cueAudio.setStartMs(start.getMs());
 		cueAudio.setEndMs(end.getMs());
@@ -144,6 +144,7 @@ public class AudioCue implements Cue, CueAudio.Listener, VolumeManager.Listener 
 				listener.audioStarted();
 			System.out.println("Starting a new cue: " + name);
 		}
+		return true;
 	}
 
 	public boolean pauseResume() {
@@ -188,8 +189,11 @@ public class AudioCue implements Cue, CueAudio.Listener, VolumeManager.Listener 
 	}
 
 	public Duration getEnd() {
-		if (end == null)
+		if (end == null) {
 			end = cueAudioFactory.getDuration();
+			if (end == null)
+				return Duration.ZERO;
+		}
 		return end;
 	}
 
